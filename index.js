@@ -52,11 +52,22 @@ function decodeBase64Image(dataString) {
 app.post('/post_image', function(req, res) {
   console.log('aggregate the image!');
 
+  var tmp_path = req.files.image.path;
+  var new_path = __dirname + tmp_path;
+
+  fs.writeFile(new_path, data, function(err) {
+    console.log('err');
+  })
+
+
+  var bitmap = fs.readFileSync(file);
+    // convert binary data to base64 encoded string
+  var image_64 = new Buffer(bitmap).toString('base64');
   // console.log('req.body', req.body);
 
   let { image } = req.body;
 
-  images_ref.push({image});
+  images_ref.push({image_64});
 
   // images_ref.once('value', snap => {
   //   let images = [];
