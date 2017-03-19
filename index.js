@@ -2,6 +2,8 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var firebase = require('firebase');
 var fs = require('fs');
+var FormData = require('form-data');
+var fetch = require('node-fetch');
 
 var config = {
     apiKey: "AIzaSyCBXjXTPiYdH5YmwjqGkYEBc3P3oRSEs8U",
@@ -19,7 +21,7 @@ var app = express();
 
 app.use(bodyParser.json());
 
-app.use(express.static('files'));
+app.use('/images', express.static('images'));
 
 app.get('/', function(req, res) {
   res.json({home: 'home'})
@@ -30,19 +32,19 @@ app.get('/images', function(req, res) {
   res.json(images);
 })
 
-// function decodeBase64Image(dataString) {
-//   var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-//   var response = {};
-//
-//   if (matches.length !== 3) {
-//     return new Error('Invalid input string');
-//   }
-//
-//   response.type = matches[1];
-//   response.data = new Buffer(matches[2], 'base64');
-//
-//   return response;
-// }
+function decodeBase64Image(dataString) {
+  var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+  var response = {};
+
+  if (matches.length !== 3) {
+    return new Error('Invalid input string');
+  }
+
+  response.type = matches[1];
+  response.data = new Buffer(matches[2], 'base64');
+
+  return response;
+}
 
 // one post request, send image,
 // then sends back the aggregated image
@@ -64,9 +66,9 @@ app.post('/post_image', function(req, res) {
   //   })
   //   console.log('images.length', images.length);
   //   var image_string = './images/image_' + images.length + '.png';
-  //   // console.log('imageBuffer.data', imageBuffer.data);
-  //   console.log('image_string', image_string);
-  //
+  // //   // console.log('imageBuffer.data', imageBuffer.data);
+  // //   console.log('image_string', image_string);
+  // //
   //   fs.writeFile(image_string, imageBuffer.data, function(err) {
   //     console.log('well actually check the folder');
   //   })
@@ -94,6 +96,80 @@ app.post('/group_image', function(req, res) {
   group_ref.push(image);
 
   res.json({success: 'success'})
+})
+
+
+
+// function getImageFormData(base64_url) {
+//   const formData = new FormData();
+
+
+
+
+  // turn this base64_url into a png type
+  // {}
+  //
+  // return {path};
+  // formData.append("file", { uri: path, type: "image/png" });
+  // return formData;
+// }
+/*
+POST
+
+{
+  "image": "base64asdkflasdjfalksdfj...."
+}
+*/
+
+app.post('/image_desc', function(req, res) {
+  let {image} = req.body;
+
+
+  // convert to image
+
+    var imageBuffer = decodeBase64Image(image);
+
+    var path = './images/to_ms.png'
+    // create a png path
+    fs.writeFile(path, imageBuffer.data, function(err) {
+      console.log('pobably no err')
+    })
+
+      var http = require("https");
+
+      var options = {
+        "method": "POST",
+        "hostname": "westus.api.cognitive.microsoft.com",
+        "port": null,
+        "path": "/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=false&returnFaceAttributes=age%2Cgender%2Csmile%2CfacialHair%2Cemotion",
+        "headers": {
+          "content-type": "application/json",
+          "ocp-apim-subscription-key": "e94b8bd5ec3941dc8b0f085b576edb00",
+          "cache-control": "no-cache",
+          "postman-token": "561c4a8d-5bf9-5327-ca27-1402493e328d"
+        }
+      };
+
+      var req = http.request(options, function (res) {
+        var chunks = [];
+
+        res.on("data", function (chunk) {
+          chunks.push(chunk);
+        });
+
+        res.on("end", function () {
+          var body = Buffer.concat(chunks);
+          console.log('body', body.toString());
+        });
+      });
+
+      // req.write(JSON.stringify({ url: 'https://placeit.net/uploads/stage/stage_image/2957/default_a4991.png' }));
+
+      // TODO change to heroku and indent well
+      req.write(JSON.stringify({ url: 'http://localhost:4000/images/to_ms.png' }))
+      req.end();
+
+
 })
 
 

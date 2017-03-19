@@ -13,6 +13,9 @@
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
     "firebase": "^3.7.2",
-    "fs": "0.0.1-security"
+    "form-data": "^2.1.2",
+    "fs": "0.0.1-security",
+    "https": "^1.0.0",
+    "node-fetch": "^1.6.3"
   }
 }
