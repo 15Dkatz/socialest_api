@@ -130,7 +130,7 @@ app.post('/image_desc', function(req, orig_res) {
   var imageBuffer = decodeBase64Image(image);
 
 
-  var path = '/images/image.png'
+  var path = '/images/image_009.png'
   // create a png path
   fs.writeFile('.' + path, imageBuffer.data, function() {
     console.log('getting face data');
@@ -166,7 +166,10 @@ app.post('/image_desc', function(req, orig_res) {
     });
 
     // TODO change to heroku and indent well
-    req.write(JSON.stringify({url: 'https://socialestapi2.herokuapp.com/images/image.png'}))
+
+
+    // why does the picture change but the image data stays the same/????... triggered
+    req.write(JSON.stringify({url: 'https://socialestapi2.herokuapp.com/images/image_009.png'}))
     req.end();
   })
 
