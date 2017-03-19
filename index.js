@@ -166,7 +166,7 @@ app.post('/image_desc', function(req, orig_res) {
     });
 
     // TODO change to heroku and indent well
-    req.write(JSON.stringify({ url: './images/image.png' }))
+    req.write(JSON.stringify({url: 'https://socialestapi2.herokuapp.com/images/image.png'}))
     req.end();
   })
 
