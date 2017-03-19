@@ -19,7 +19,7 @@ var groups_ref = firebase.database().ref().child('groups');
 
 var app = express();
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '50mb'}));
 
 app.use('/images', express.static('images'));
 
@@ -121,55 +121,63 @@ POST
 }
 */
 
-app.post('/image_desc', function(req, res) {
+app.post('/image_desc', function(req, orig_res) {
   let {image} = req.body;
 
 
   // convert to image
 
-    var imageBuffer = decodeBase64Image(image);
+  var imageBuffer = decodeBase64Image(image);
 
-    var path = './images/to_ms.png'
-    // create a png path
-    fs.writeFile(path, imageBuffer.data, function(err) {
-      console.log('pobably no err')
-    })
 
-      var http = require("https");
+  var path = '/images/to_ms.png'
+  // create a png path
+  fs.writeFile('.' + path, imageBuffer.data, function() {
+    console.log('getting face data');
 
-      var options = {
-        "method": "POST",
-        "hostname": "westus.api.cognitive.microsoft.com",
-        "port": null,
-        "path": "/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=false&returnFaceAttributes=age%2Cgender%2Csmile%2CfacialHair%2Cemotion",
-        "headers": {
-          "content-type": "application/json",
-          "ocp-apim-subscription-key": "e94b8bd5ec3941dc8b0f085b576edb00",
-          "cache-control": "no-cache",
-          "postman-token": "561c4a8d-5bf9-5327-ca27-1402493e328d"
-        }
-      };
+    var http = require("https");
 
-      var req = http.request(options, function (res) {
-        var chunks = [];
+    var options = {
+      "method": "POST",
+      "hostname": "westus.api.cognitive.microsoft.com",
+      "port": null,
+      "path": "/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=false&returnFaceAttributes=age%2Cgender%2Csmile%2CfacialHair%2Cemotion",
+      "headers": {
+        "content-type": "application/json",
+        "ocp-apim-subscription-key": "e94b8bd5ec3941dc8b0f085b576edb00",
+        "cache-control": "no-cache",
+        "postman-token": "561c4a8d-5bf9-5327-ca27-1402493e328d"
+      }
+    };
 
-        res.on("data", function (chunk) {
-          chunks.push(chunk);
-        });
+    var req = http.request(options, function (res) {
+      var chunks = [];
 
-        res.on("end", function () {
-          var body = Buffer.concat(chunks);
-          console.log('body', body.toString());
-        });
+      res.on("data", function (chunk) {
+        chunks.push(chunk);
       });
 
-      // req.write(JSON.stringify({ url: 'https://placeit.net/uploads/stage/stage_image/2957/default_a4991.png' }));
+      res.on("end", function () {
+        var body = Buffer.concat(chunks);
+        console.log('body', body.toString());
 
-      // TODO change to heroku and indent well
-      req.write(JSON.stringify({ url: 'http://localhost:4000/images/to_ms.png' }))
-      req.end();
+        orig_res.json({success: body.toString()})
+      });
+    });
+
+    // req.write(JSON.stringify({ url: 'https://placeit.net/uploads/stage/stage_image/2957/default_a4991.png' }));
+
+    // TODO change to heroku and indent well
+    req.write(JSON.stringify({ url: 'https://socialestapi2.herokuapp.com' + path }))
+    req.end();
+  })
+
+  // .then(() => {
 
 
+
+
+  // })
 })
 
 
