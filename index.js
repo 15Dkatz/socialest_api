@@ -130,7 +130,11 @@ app.post('/image_desc', function(req, orig_res) {
   var imageBuffer = decodeBase64Image(image);
 
 
-  var path = '/images/image_009.png'
+  // generate random number from 1-50000 to make sure that it's a unique path??
+
+  var random_num = Math.floor(Math.random()*10000)+1;
+
+  var path = '/images/image_'+random_num+'.png'
   // create a png path
   fs.writeFile('.' + path, imageBuffer.data, function() {
     console.log('getting face data');
@@ -169,7 +173,7 @@ app.post('/image_desc', function(req, orig_res) {
 
 
     // why does the picture change but the image data stays the same/????... triggered
-    req.write(JSON.stringify({url: 'https://socialestapi2.herokuapp.com/images/image_009.png'}))
+    req.write(JSON.stringify({url: 'https://socialestapi2.herokuapp.com/images/image_'+random_num+'.png'}))
     req.end();
   })
 
