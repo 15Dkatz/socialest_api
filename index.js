@@ -159,25 +159,17 @@ app.post('/image_desc', function(req, orig_res) {
 
       res.on("end", function () {
         var body = Buffer.concat(chunks);
-        console.log('body', body.toString());
+        console.log('resulting body', body.toString(), 'stringified');
 
         orig_res.json({success: JSON.parse(body.toString())})
       });
     });
 
-    // req.write(JSON.stringify({ url: 'https://placeit.net/uploads/stage/stage_image/2957/default_a4991.png' }));
-
     // TODO change to heroku and indent well
-    req.write(JSON.stringify({ url: 'https://socialestapi2.herokuapp.com/images/image.png' }))
+    req.write(JSON.stringify({ url: './images/image.png' }))
     req.end();
   })
 
-  // .then(() => {
-
-
-
-
-  // })
 })
 
 
