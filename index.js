@@ -161,7 +161,7 @@ app.post('/image_desc', function(req, orig_res) {
         var body = Buffer.concat(chunks);
         console.log('body', body.toString());
 
-        orig_res.json({success: body.toString()})
+        orig_res.json({success: JSON.parse(body.toString())})
       });
     });
 
