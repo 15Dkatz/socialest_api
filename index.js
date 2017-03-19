@@ -130,7 +130,7 @@ app.post('/image_desc', function(req, orig_res) {
   var imageBuffer = decodeBase64Image(image);
 
 
-  var path = '/images/to_ms.png'
+  var path = '/images/image.png'
   // create a png path
   fs.writeFile('.' + path, imageBuffer.data, function() {
     console.log('getting face data');
@@ -168,7 +168,7 @@ app.post('/image_desc', function(req, orig_res) {
     // req.write(JSON.stringify({ url: 'https://placeit.net/uploads/stage/stage_image/2957/default_a4991.png' }));
 
     // TODO change to heroku and indent well
-    req.write(JSON.stringify({ url: 'https://socialestapi2.herokuapp.com' + path }))
+    req.write(JSON.stringify({ url: 'https://socialestapi2.herokuapp.com/images/image.png' }))
     req.end();
   })
 
